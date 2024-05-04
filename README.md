@@ -1,1 +1,1 @@
-Ông nào có muốn sửa phần nafo thì tạo branch chứ đừng làm trên nhánh main nha :(((
+Ông nào có muốn sửa phần nào thì tạo branch chứ đừng làm trên nhánh main nha :(((
