@@ -3,6 +3,8 @@ import time
 import random
 from button import Button
 
+#lul
+
 pygame.init()
 
 SCREEN = pygame.display.set_mode((1280, 720))
