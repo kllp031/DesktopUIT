@@ -1,1 +1,1 @@
-Ông nào có muốn sửa phần nào thì tạo branch chứ đừng làm trên nhánh main nha :((( 
+Trong phần option có mode với theme mode chỉnh độ khó và theme chinh chủ đề cho game 
