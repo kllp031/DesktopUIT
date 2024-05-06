@@ -6,13 +6,36 @@ from button import Button
 def get_font(size): # Returns Press-Start-2P in the desired size
     return pygame.font.Font("assets/font.ttf", size)
 
+toc_do_ran = 20
+snake_head=pygame.image.load("assets/meome.png")
+snake_head= pygame.transform.scale(snake_head,(40,40))
+snake_bodys=[]
+snake_body= pygame.image.load("assets/meocon1.png")
+snake_body= pygame.transform.scale(snake_body,(40,40))
+snake_bodys.append(snake_body)
+snake_body= pygame.image.load("assets/meocon2.png")
+snake_body= pygame.transform.scale(snake_body,(40,40))
+snake_bodys.append(snake_body)
+snake_body=pygame.image.load("assets/meocon3.png")
+snake_body= pygame.transform.scale(snake_body,(40,40))
+snake_bodys.append(snake_body)
+BG_Game = pygame.image.load("assets/greenhill.jpg")
+Snake_theme= [snake_head,snake_bodys,BG_Game]
+mau_den = pygame.Color(0, 0, 0)
+mau_trang = pygame.Color(255, 255, 255)
+mau_do = pygame.Color(255, 0, 0)
+mau_xanh_la = pygame.Color(0, 255, 0)
+mau_xanh_duong = pygame.Color(0, 0, 255)
+
 class Game:
+    global snake_bodys
+    global Snake_theme
     def __init__(self):
         # Tốc độ của rắn
-        self.toc_do_ran = 15
+        self.toc_do_ran = toc_do_ran
 
         # Kích thước khối của rắn và mồi
-        self.kich_thuoc_khoi = 20
+        self.kich_thuoc_khoi = 40
 
         # Kích thước cửa sổ
         self.kich_thuoc_x = 1280
@@ -34,12 +57,13 @@ class Game:
         self.fps = pygame.time.Clock()
 
         # Định nghĩa vị trí mặc định của rắn
-        self.vi_tri_ran = [200, 100]
+        self.vi_tri_ran = [0, 0]
 
         # Định nghĩa 4 khối đầu tiên của thân rắn
-        self.thân_ran = [[80, 60], [60, 60], [40, 60], [20, 60]]
+        self.thân_ran = [[Snake_theme[0], self.vi_tri_ran]]
 
         # Định nghĩa vị trí mồi
+        self.loai_moi=random.randint(0,2)
         self.vi_tri_moi = [random.randrange(0, self.kich_thuoc_x//self.kich_thuoc_khoi) * self.kich_thuoc_khoi,
                            random.randrange(0, self.kich_thuoc_y//self.kich_thuoc_khoi) * self.kich_thuoc_khoi]
 
@@ -52,6 +76,11 @@ class Game:
 
         # Điểm số ban đầu
         self.diem_so = 0
+
+        # Snake theme
+        self.snake_head = Snake_theme[0]
+        self.snake_bodys = Snake_theme[1]
+        self.BG_Game = Snake_theme[2]
 
     # Hàm hiển thị điểm số
     def hien_thi_diem_so(self, lua_chon, mau, font, kich_co):
@@ -126,28 +155,52 @@ class Game:
                 self.vi_tri_ran[0] += self.kich_thuoc_khoi
 
             # Cơ chế tăng kích thước thân rắn
-            self.thân_ran.insert(0, list(self.vi_tri_ran))
+            # self.thân_ran.insert(0, list(self.vi_tri_ran))
+            b=[]
             if (self.vi_tri_ran[0] >= self.vi_tri_moi[0] and self.vi_tri_ran[0] < self.vi_tri_moi[0] + self.kich_thuoc_khoi) and (self.vi_tri_ran[1] >= self.vi_tri_moi[1] and self.vi_tri_ran[1] < self.vi_tri_moi[1] + self.kich_thuoc_khoi):
+                for vi_tri in range(len(self.thân_ran)):
+                    if self.thân_ran[vi_tri][0]==Snake_theme[0]:
+                        a=[self.thân_ran[vi_tri][0],list(self.vi_tri_ran)]
+                        b= self.thân_ran[vi_tri][1]
+                        self.thân_ran[vi_tri][0]=a[0]
+                        self.thân_ran[vi_tri][1]=a[1]
+                    else:
+                        a=[self.thân_ran[vi_tri][0],b]
+                        b= self.thân_ran[vi_tri][1]
+                        self.thân_ran[vi_tri][0]=a[0]
+                        self.thân_ran[vi_tri][1]=a[1]
+                a=[Snake_theme[1][self.loai_moi],b]
+                self.thân_ran.append(a)
                 self.diem_so += 10
                 self.Tao_moi = False
             else:
-                self.thân_ran.pop()
+                for vi_tri in range(len(self.thân_ran)):
+                    if self.thân_ran[vi_tri][0]==Snake_theme[0]:
+                        a=[self.thân_ran[vi_tri][0],list(self.vi_tri_ran)]
+                        b= self.thân_ran[vi_tri][1]
+                        self.thân_ran[vi_tri][0]=a[0]
+                        self.thân_ran[vi_tri][1]=a[1]
+                    else:
+                        a=[self.thân_ran[vi_tri][0],b]
+                        b= self.thân_ran[vi_tri][1]
+                        self.thân_ran[vi_tri][0]=a[0]
+                        self.thân_ran[vi_tri][1]=a[1]
 
             # Tạo mồi mới
+            
             if not self.Tao_moi:
-                self.vi_tri_moi = [random.randrange(1, (self.kich_thuoc_x//self.kich_thuoc_khoi)) * self.kich_thuoc_khoi,
-                                   random.randrange(1, (self.kich_thuoc_y//self.kich_thuoc_khoi)) * self.kich_thuoc_khoi]
+                self.loai_moi= random.randint(0,2)
+                self.vi_tri_moi = [random.randrange(0, (self.kich_thuoc_x//self.kich_thuoc_khoi)) * self.kich_thuoc_khoi,
+                                   random.randrange(0, (self.kich_thuoc_y//self.kich_thuoc_khoi)) * self.kich_thuoc_khoi]
 
             self.Tao_moi = True
-            self.cua_so_game.fill(self.mau_den)
+            self.cua_so_game.blit(self.BG_Game, (0,-360))
 
             # Vẽ rắn và mồi
             for vi_tri in self.thân_ran:
-                pygame.draw.rect(self.cua_so_game, self.mau_xanh_la,
-                                pygame.Rect(vi_tri[0], vi_tri[1], self.kich_thuoc_khoi, self.kich_thuoc_khoi))
-            pygame.draw.rect(self.cua_so_game, self.mau_trang, pygame.Rect(
-            self.vi_tri_moi[0], self.vi_tri_moi[1], self.kich_thuoc_khoi, self.kich_thuoc_khoi))
-
+                self.cua_so_game.blit(vi_tri[0], (vi_tri[1][0],vi_tri[1][1]))
+            self.cua_so_game.blit(snake_bodys[self.loai_moi],(self.vi_tri_moi[0],self.vi_tri_moi[1]))    
+            
             # Điều kiện kết thúc game
             if self.vi_tri_ran[0] < 0 or self.vi_tri_ran[0] > self.kich_thuoc_x-self.kich_thuoc_khoi:
                 self.ket_thuc_game('Điểm số : ' + str(self.diem_so), self.mau_do, 'times new roman', 20)
@@ -156,8 +209,9 @@ class Game:
 
             # Chạm vào thân rắn
             for khoi in self.thân_ran[1:]:
-                if self.vi_tri_ran[0] == khoi[0] and self.vi_tri_ran[1] == khoi[1]:
+                if self.vi_tri_ran[0] == khoi[1][0] and self.vi_tri_ran[1] == khoi[1][1]:
                     self.ket_thuc_game('Điểm số : ' + str(self.diem_so), self.mau_do, 'times new roman', 20)
+                    self.kich_thuoc_khoi = 0
 
             # Hiển thị điểm số liên tục
             self.hien_thi_diem_so('Điểm số : ' + str(self.diem_so), self.mau_trang, 'times new roman', 20)
@@ -167,12 +221,140 @@ class Game:
 
             # Khung hình mỗi giây
             self.fps.tick(self.toc_do_ran)
-    
+
+def mode():
+    global toc_do_ran
+    while True:
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+        SCREEN.fill("white")
+        
+        OPTIONS_EASY = Button(image=None, pos=(640, 150), 
+                            text_input="EASY", font=get_font(75), base_color="Black", hovering_color="Green")
+        
+        OPTIONS_NORMAL = Button(image=None, pos=(640, 300), 
+                            text_input="NORMAL", font=get_font(75), base_color="Black", hovering_color="Green")
+        
+        OPTIONS_HARD = Button(image=None, pos=(640, 450), 
+                            text_input="HARD", font=get_font(75), base_color="Black", hovering_color="Green")
+        
+        OPTIONS_EASY.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_NORMAL.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_HARD.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_EASY.update(SCREEN)
+        OPTIONS_NORMAL.update(SCREEN)
+        OPTIONS_HARD.update(SCREEN)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_EASY.checkForInput(OPTIONS_MOUSE_POS):
+                    toc_do_ran = 10
+                    option = Options(SCREEN)
+                    option.options()
+                if OPTIONS_NORMAL.checkForInput(OPTIONS_MOUSE_POS):
+                    toc_do_ran=20
+                    option = Options(SCREEN)
+                    option.options()
+                if OPTIONS_HARD.checkForInput(OPTIONS_MOUSE_POS):
+                    toc_do_ran=30
+                    option = Options(SCREEN)
+                    option.options()
+        
+        pygame.display.update()
+
+def theme():
+    while True:
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+        SCREEN.fill("white")
+        
+        OPTIONS_MEOW = Button(image=None, pos=(640, 150), 
+                            text_input="CAT", font=get_font(75), base_color="Black", hovering_color="Green")
+        
+        OPTIONS_FISH = Button(image=None, pos=(640, 300), 
+                            text_input="FISH", font=get_font(75), base_color="Black", hovering_color="Green")
+        
+        OPTIONS_UFO = Button(image=None, pos=(640, 450), 
+                            text_input="UFO", font=get_font(75), base_color="Black", hovering_color="Green")
+        
+        OPTIONS_MEOW.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_FISH.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_UFO.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_MEOW.update(SCREEN)
+        OPTIONS_FISH.update(SCREEN)
+        OPTIONS_UFO.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_MEOW.checkForInput(OPTIONS_MOUSE_POS):
+                    Snake_theme[0]=pygame.image.load("assets/meome.png")
+                    Snake_theme[0]=pygame.transform.scale(Snake_theme[0],(40,40))
+                    
+                    Snake_theme[1][0]=pygame.image.load("assets/meocon1.png")
+                    Snake_theme[1][0]=pygame.transform.scale(Snake_theme[1][0],(40,40))
+                    
+                    Snake_theme[1][1]=pygame.image.load("assets/meocon2.png")
+                    Snake_theme[1][1]=pygame.transform.scale(Snake_theme[1][1],(40,40))
+                    
+                    Snake_theme[1][2]=pygame.image.load("assets/meocon3.png")
+                    Snake_theme[1][2]=pygame.transform.scale(Snake_theme[1][2],(40,40))
+                    
+                    Snake_theme[2]=pygame.image.load("assets/greenhill.jpg")
+                    
+                    option = Options(SCREEN)
+                    option.options()
+                    
+                if OPTIONS_FISH.checkForInput(OPTIONS_MOUSE_POS):
+                    Snake_theme[0]=pygame.image.load("assets/clownfish.png")
+                    Snake_theme[0]=pygame.transform.scale(Snake_theme[0],(40,40))
+                    
+                    Snake_theme[1][0]=pygame.image.load("assets/shark.png")
+                    Snake_theme[1][0]=pygame.transform.scale(Snake_theme[1][0],(40,40))
+                    
+                    Snake_theme[1][1]=pygame.image.load("assets/turtle.png")
+                    Snake_theme[1][1]=pygame.transform.scale(Snake_theme[1][1],(40,40))
+                    
+                    Snake_theme[1][2]=pygame.image.load("assets/bluefish.png")
+                    Snake_theme[1][2]=pygame.transform.scale(Snake_theme[1][2],(40,40))
+                    
+                    Snake_theme[2]=pygame.image.load("assets/underwater.png")
+                    option = Options(SCREEN)
+                    option.options()
+
+                    
+                if OPTIONS_UFO.checkForInput(OPTIONS_MOUSE_POS):
+                    Snake_theme[0]=pygame.image.load("assets/theUFO.png")
+                    Snake_theme[0]=pygame.transform.scale(Snake_theme[0],(40,40))
+                    
+                    Snake_theme[1][0]=pygame.image.load("assets/cow.png")
+                    Snake_theme[1][0]=pygame.transform.scale(Snake_theme[1][0],(40,40))
+                    
+                    Snake_theme[1][1]=pygame.image.load("assets/person.png")
+                    Snake_theme[1][1]=pygame.transform.scale(Snake_theme[1][1],(40,40))
+                    
+                    Snake_theme[1][2]=pygame.image.load("assets/plant.png")
+                    Snake_theme[1][2]=pygame.transform.scale(Snake_theme[1][2],(40,40))
+                    
+                    Snake_theme[2]=pygame.image.load("assets/demdaysao.jpg")
+                    option = Options(SCREEN)
+                    option.options()
+        
+        pygame.display.update()
+
 class Options:
     def __init__(self, screen):
         self.screen = screen
-        self.back_button = Button(image=None, pos=(640, 460), 
+        self.back_button = Button(image=None, pos=(640, 450), 
                                   text_input="BACK", font=get_font(75), base_color="Black", hovering_color="Green")
+        self.mode_button = Button(image=None, pos=(640, 300), 
+                                  text_input="MODE", font=get_font(75), base_color="Black", hovering_color="Green")
+        self.theme_button = Button(image=None, pos=(640, 150), 
+                                   text_input="THEME", font=get_font(75), base_color="Black", hovering_color="Green")
+
+
 
     def options(self):
         while True:
@@ -180,12 +362,14 @@ class Options:
 
             self.screen.fill("white")
 
-            options_text = get_font(45).render("This is the OPTIONS screen.", True, "Black")
-            options_rect = options_text.get_rect(center=(640, 260))
-            self.screen.blit(options_text, options_rect)
-
             self.back_button.changeColor(options_mouse_pos)
             self.back_button.update(self.screen)
+
+            self.mode_button.changeColor(options_mouse_pos)
+            self.mode_button.update(self.screen)
+
+            self.theme_button.changeColor(options_mouse_pos)
+            self.theme_button.update(self.screen)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -195,8 +379,13 @@ class Options:
                     if self.back_button.checkForInput(options_mouse_pos):
                         menu = Menu(SCREEN, BG)
                         menu.main_menu()
-
+                    if self.mode_button.checkForInput(options_mouse_pos):
+                        mode()
+                    if self.theme_button.checkForInput(options_mouse_pos):
+                        theme()
             pygame.display.update()
+
+    
 
 class Menu:
     def __init__(self, screen, bg):
